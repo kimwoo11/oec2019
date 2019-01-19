@@ -2,9 +2,9 @@ from typing import List, Any
 
 from util import *
 
+
 def build_queue(filename):
     patient_queue = PatientQueue()
-
 
     # import data from a file
     f = open(filename, "r")
@@ -12,27 +12,30 @@ def build_queue(filename):
     f.close()
     lines = [line.rstrip('\n') for line in lines]
 
-
     for line in lines:
         line = line.split(",")
-        patient_queue.insert(Patient(line[0], line[1], int(line[2]), int(line[3]), -1, 0, line[6], line[7], line[8], line[9], line[10], line[11], line[12], line[13]))
+        patient_queue.insert(
+            Patient(line[0], line[1], int(line[2]), int(line[3]), -1, 0, line[6], line[7], line[8], line[9], line[10],
+                    line[11], line[12], line[13]))
 
     return patient_queue
 
+
 def patient_status(patient):
-    print("Patient Name: "+ patient.name )
-    print("     ID: "+ patient.id)
+    print("Patient Name: " + patient.name)
+    print("     ID: " + patient.id)
     print("     Priority: " + patient.priority)
     print("     Age: " + patient.age)
     print("     Gender: " + patient.gender)
-    if patient.bed_number == -1 :
+    if patient.bed_number == -1:
         print("     Status: Still Waiting")
-        print("     Wait Time: "+ patient.wait_time)
+        print("     Wait Time: " + patient.wait_time)
 
     else:
         print("     Status: In Care")
-        print("     Bed ID: "+ patient.bed_number)
+        print("     Bed ID: " + patient.bed_number)
         print("     Time Remaining: " + patient.total_time)
+
 
 def bed_status(bed):
     print("Bed Number: " + bed.bed_id)
@@ -48,50 +51,51 @@ def bed_status(bed):
 
 
 def final_statistics(metadata, hospital, current_time):
-    #Patient Wait Time
+    # Patient Wait Time
     print("Average Patient Wait Time")
-    print("     total: "+str((metadata[0]+metadata[1]+metadata[2]+metadata[3]+metadata[4])/(metadata[5]+metadata[6]+metadata[7]+metadata[8]+metadata[9])))
-    print("     Priority Level 1: "+str((metadata[0])/(metadata[5])) + " min.")
+    print("     total: " + str((metadata[0] + metadata[1] + metadata[2] + metadata[3] + metadata[4]) / (
+                metadata[5] + metadata[6] + metadata[7] + metadata[8] + metadata[9])))
+    print("     Priority Level 1: " + str((metadata[0]) / (metadata[5])) + " min.")
     print("     Priority Level 2: " + str((metadata[1]) / (metadata[6])) + " min.")
     print("     Priority Level 3: " + str((metadata[2]) / (metadata[7])) + " min.")
     print("     Priority Level 4: " + str((metadata[3]) / (metadata[8])) + " min.")
     print("     Priority Level 5: " + str((metadata[4]) / (metadata[9])) + " min.")
 
     print("Maximum Patient Wait Time: " + str(metadata[10]))
-    #Bed turnover
+    # Bed turnover
     print("Average Bed Turnover Time")
-    print("     total: " + str((metadata[11] + metadata[12] + metadata[13]) / (metadata[14] + metadata[15] + metadata[16])) + " min.")
+    print("     total: " + str(
+        (metadata[11] + metadata[12] + metadata[13]) / (metadata[14] + metadata[15] + metadata[16])) + " min.")
     print("     Main Floor: " + str((metadata[11]) / (metadata[14])) + " min.")
     print("     Step Down: " + str((metadata[12]) / (metadata[15])) + " min.")
     print("     Intensive Care Unit: " + str((metadata[13]) / (metadata[16])) + " min.")
-   
-    #Bed Occupancy
-    occupancy_ratios = [0.0,0.0,0.0]
+
+    # Bed Occupancy
+    occupancy_ratios = [0.0, 0.0, 0.0]
     for i in range(len(hospital)):
         for j in range(len(hospital[i])):
-            occupancy_ratios[i]+= hospital[i][j].occupancy_ratio
+            occupancy_ratios[i] += hospital[i][j].occupancy_ratio
 
     print("Average Occupancy Time")
-    print("     total: " + str(round((occupancy_ratios[0] + occupancy_ratios[1] + occupancy_ratios[2])/(len(hospital[0])+len(hospital[1])+len(hospital[2])), 3))+ " min.")
-    print("     Main Floor: " + str(round((occupancy_ratios[0])/(len(hospital[0])), 3))+ " min.")
-    print("     Step Down: " + str(round((occupancy_ratios[1]) / (len(hospital[1])), 3))+ " min.")
-    print("     Intensive Care Unit: " + str(round((occupancy_ratios[2]) / (len(hospital[2])), 3))+ " min.")
+    print("     total: " + str(round((occupancy_ratios[0] + occupancy_ratios[1] + occupancy_ratios[2]) / (
+                len(hospital[0]) + len(hospital[1]) + len(hospital[2])), 3)) + " min.")
+    print("     Main Floor: " + str(round((occupancy_ratios[0]) / (len(hospital[0])), 3)) + " min.")
+    print("     Step Down: " + str(round((occupancy_ratios[1]) / (len(hospital[1])), 3)) + " min.")
+    print("     Intensive Care Unit: " + str(round((occupancy_ratios[2]) / (len(hospital[2])), 3)) + " min.")
 
-    #Queue Size
-    print("Average Queue Size: " + str(metadata[17]/current_time)+ " patients")
+    # Queue Size
+    print("Average Queue Size: " + str(metadata[17] / current_time) + " patients")
 
 
 def sim(hospital, queue, metadata, curr_time):
     # Full simulation, patient to bed allocation based on patient priority
     # given by the machine learning model
 
-
     while curr_time < 250:
         patient, floor, bed, queue = check_4_openings(queue, hospital)
 
         # Case 1: no patient can be allocated (all beds full)
         # Case 2: patient can be allocated to a specific bed and floor
-
 
         if patient != -1:
             floor -= 1
@@ -102,14 +106,13 @@ def sim(hospital, queue, metadata, curr_time):
         #     queue.queue[i].wait_time += 1
         #     queue.queue[i].priority = wait_to_priority(queue.queue[i].wait_time, queue.queue[i].priority)
 
-
         # Update timestamps for every bed in the hospital
         for i in range(len(hospital)):
             for j in range(len(hospital[i])):
                 hospital[i][j].update_bed()
 
         curr_time += 1
-        metadata[17]+= len(queue.queue)
+        metadata[17] += len(queue.queue)
     return curr_time
 
 
@@ -124,11 +127,11 @@ def check_4_openings(queue, hospital):
         next_floor = find_patient_floor(queue, hospital)
         next_bed = check_4_beds(next_floor, hospital)
 
-        if next_bed == -1:                              # Bed for this patient not available
+        if next_bed == -1:  # Bed for this patient not available
             popped_patients.append(queue.pop())
-        else:                                           # Bed for this patient available
+        else:  # Bed for this patient available
             # Insert all patients back into the priority queue
-            next_patient = queue.pop()                  # This patient can be allocated
+            next_patient = queue.pop()  # This patient can be allocated
             for i in range(len(popped_patients)):
                 queue.insert(popped_patients[i])
             return next_patient, next_floor, next_bed, queue
@@ -160,13 +163,13 @@ def find_patient_floor(queue, hospital):
     patient = queue.pop()
     if patient.priority == 1:
         queue.insert(patient)
-        return 3                                            # Assign patient to floor 3, ICU
+        return 3  # Assign patient to floor 3, ICU
     elif patient.priority == 2 or patient.priority == 3:
         queue.insert(patient)
-        return 2                                            # Assign patient to floor 2, Moderate
+        return 2  # Assign patient to floor 2, Moderate
     else:
         queue.insert(patient)
-        return 1                                            # Assign patient to floor 1, Low Priority
+        return 1  # Assign patient to floor 1, Low Priority
 
 
 def make_hospital(floors, beds):
@@ -195,7 +198,6 @@ def wait_to_priority(wait, priority):
         return 3
     elif priority == 5 and wait >= 480:
         return 4
-
 
 
 if __name__ == "__main__":
