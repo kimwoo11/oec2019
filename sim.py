@@ -1,5 +1,22 @@
 from util import *
 
+def build_queue(filename):
+    patient_queue = PatientQueue()
+
+
+    # import data from a file
+    f = open(filename, "r")
+    lines = f.readlines()
+    f.close()
+    lines = [line.rstrip('\n') for line in lines]
+
+
+    for line in lines:
+        line = line.split(",")
+        patient_queue.insert(Patient(line[0], line[1], line[2], line[3], -1, 0, line[6], line[7], line[8], line[9], line[10], line[11], line[12], line[13]))
+
+    return patient_queue
+
 def sim(hospital, queue)
     # Current simulation time in seconds
     curr_time = 0
@@ -12,12 +29,7 @@ def sim(hospital, queue)
         if patient != -1:
             floor -= 1
             z_array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]      # Will be used for calculating performance metrics
-            hospital[floor][bed].assign_patient(patient.id, patient.total_time, z_array):
-
-
-
-
-
+            hospital[floor][bed].assign_patient(patient.id, patient.total_time, z_array)
 
 
         curr_time += 1
@@ -93,7 +105,8 @@ def make_hospital(floors, beds):
 
 if __name__ == "__main__":
     beds = [100, 100, 100]
-    Hospital = make_hospital(len(beds), beds)
+    hospital = make_hospital(len(beds), beds)
     patient_queue = build_queue(filename)
 
-    sim(Hospital, patient_queue)
+    sim(hospital, patient_queue)
+

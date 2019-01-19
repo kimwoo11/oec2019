@@ -65,11 +65,11 @@ class PatientQueue(object):
 		self.queue.append(data)
 
 	# for popping an element based on Priority
-	def delete(self):
+	def pop(self):
 		try:
 			max = 0
 			for i in range(len(self.queue)):
-				if self.queue[i] > self.queue[max]:
+				if self.queue[i].priority > self.queue[max].priority:
 					max = i
 			item = self.queue[max]
 			del self.queue[max]
