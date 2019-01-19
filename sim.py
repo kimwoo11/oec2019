@@ -79,7 +79,7 @@ def final_statistics(metadata, hospital, current_time):
     print("Average Queue Size: " + str(metadata[17]/current_time))
 
 
-def sim(hospital, queue)
+def sim(hospital, queue):
     # Current simulation time in seconds
     curr_time = 0
     while not queue.is_empty():
@@ -165,9 +165,9 @@ def make_hospital(floors, beds):
     return hospital
 
 
-if __name__ == "__main__":
-    beds = [100, 100, 100]
-    hospital = make_hospital(len(beds), beds)
-    patient_queue = build_queue(filename)
-    sim(hospital, patient_queue)
+# if __name__ == "__main__":
+#     beds = [100, 100, 100]
+#     hospital = make_hospital(len(beds), beds)
+#     patient_queue = build_queue(filename)
+#     sim(hospital, patient_queue)
 

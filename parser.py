@@ -7,55 +7,60 @@ def help():
 	print("There are a number of commands available for you to use:")
 	print(textwrap.fill("new patient: This command will take you through a series of questions about the patient and will generate a triage score"))
 
-def new_patient():
-	print(textwrap.fill("You will be asked a number of questions about the patient. Answer to the best of your ability. To cancel the new patient operation, type CANCEL at any point."))
+def new_patient(patient_queue):
+	print(textwrap.fill("You will be asked a number of questions about the patient. Answer to the best of your ability. To cancel the new patient operation, type QUIT at any point."))
 	name = input("Name: ")
-	if(name == "CANCEL"):
+	if(name == "QUIT"):
 		return
 	age = input("Age: ")
-	if(age == "CANCEL"):
+	if(age == "QUIT"):
 		return
 	gender = input("Gender [M\F]: ")
-	if(gender == "CANCEL"):
+	if(gender == "QUIT"):
 		return
 	pregnancy_state = input("Is the patient pregnant? [y/n]: ")
-	if(pregnancy_state == "CANCEL"):
+	if(pregnancy_state == "QUIT"):
 		return
 	heart_rate_bpm = input("Heart rate (beats per minute): ")
-	if(heart_rate_bpm == "CANCEL"):
+	if(heart_rate_bpm == "QUIT"):
 		return
 	breaths_per_minute = input("Breaths per minute: ")
-	if(breaths_per_minute == "CANCEL"):
+	if(breaths_per_minute == "QUIT"):
 		return
 	body_temperature = input("Body temperature: ")
-	if(body_temperature == "CANCEL"):
+	if(body_temperature == "QUIT"):
 		return
 	blood_pressure = input("Blood pressure: ")
-	if(blood_pressure == "CANCEL"):
+	if(blood_pressure == "QUIT"):
 		return
 	ox_sat = input("Oxygen saturation level: ")
-	if(ox_sat == "CANCEL"):
+	if(ox_sat == "QUIT"):
 		return
 	# Add more here. Qualitative things?
 
 	patient = Patient(0, name, 0, 0, 0, 0, age, gender, pregnancy_state, heart_rate_bpm, breaths_per_minute, body_temperature, blood_pressure, ox_sat)
+	patient_queue.insert(patient)
+
 	print("\nInformation collected. Computing triage score...")
 
 
 # Main parser function. Runs in a while loop forever, always asking the user
 # for commands and then following up with the appropriate action.
-def parse():
+def parse(patient_queue):
 	# Clear the terminal screen
 	os.system('cls' if os.name == 'nt' else 'clear')
 	print("Welcome to IntelliCare!\n")
 	print("Type the 'help' command for a list of common commands.")
+	print("Type 'QUIT' to quit.")
 
 	# Loop forever 
 	while(True):
-		print(" >> ", end='')
+		print(">> ", end='')
 		command = input()
-		if(command == "new patient"):
-			new_patient()
+		if(command == 'QUIT'):
+			return
+		elif(command == "new patient"):
+			new_patient(patient_queue)
 		elif(command == "help"):
 			help()
 		else:
