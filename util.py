@@ -16,3 +16,34 @@ class Patient:
 		self.body_temp = body_temp
 		self.blood_pressure = blood_pressure
 		self.ox_sat = ox_sat
+
+
+class Bed:
+	occupancy = False
+	patient_id = 0
+	patient_time = -1
+	turnover_time = 0
+	maintenance_time = 0
+
+	def __init__(self, doctor_id, floor):
+		self.doctor_id = doctor_id
+		self.floor = floor
+
+	def assign_patient(self, patient_id, patient_time):
+		self.occupancy = True
+		self.patient_id = patient_id
+		self.patient_time = patient_time
+		self.turnover_time = -1
+		self.maintenance_time = 20
+
+	def update_bed(self):
+		if self.occupancy:
+			self.patient_time -= 1
+
+		if not self.occupancy:
+			self.turnover_time+=1
+			if self.maintenance_time != 0:
+				self.maintenance_time -= 1
+
+		if self.patient_time == 0:
+			self.occupancy = False
