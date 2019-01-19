@@ -86,8 +86,6 @@ def sim(hospital, queue)
         curr_time += 1
 
 
-
-
 def check_4_openings(queue, hospital):
     # If patient can be allocated, returns patient object
     # Else, returns -1
@@ -95,7 +93,7 @@ def check_4_openings(queue, hospital):
     popped_patients = []
     while not queue.is_empty():
 
-        next_floor = allocate_patient(queue, hospital)
+        next_floor = find_patient_floor(queue, hospital)
         next_bed = check_4_beds(next_floor, hospital)
         if next_bed == -1:                              # Bed for this patient not available
             popped_patients.append(queue.pop())
@@ -127,7 +125,9 @@ def check_4_beds(floor, hospital):
     return -1
 
 
-def allocate_patient(queue, hospital):
+def find_patient_floor(queue, hospital):
+    # Assigns patient to a floor based on their priority
+
     patient = queue.pop()
     if patient.priority == 1:
         queue.insert(patient_queue)
@@ -158,6 +158,5 @@ if __name__ == "__main__":
     beds = [100, 100, 100]
     hospital = make_hospital(len(beds), beds)
     patient_queue = build_queue(filename)
-
     sim(hospital, patient_queue)
 
