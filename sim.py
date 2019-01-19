@@ -45,7 +45,7 @@ def bed_status(bed):
         print("     Maintenance Time Remaining: " + bed.maintenance_time)
 
 
-def final_statistics(metadata):
+def final_statistics(metadata, hospital, current_time):
     #Patient Wait Time
     print("Average Patient Wait Time")
     print("     total: "+str((metadata[0]+metadata[1]+metadata[2]+metadata[3]+metadata[4])/(metadata[5]+metadata[6]+metadata[7]+metadata[8]+metadata[9])))
@@ -64,8 +64,19 @@ def final_statistics(metadata):
     print("     Intensive Care Unit: " + str((metadata[13]) / (metadata[16])) + " min.")
    
     #Bed Occupancy
+    occupancy_ratios = [0.0,0.0,0.0]
+    for i in range(len(hospital)):
+        for j in range(len(hospital[i])):
+            occupancy_ratios[i]+= hospital[i][j].occupancy_ratio
+
+    print("Average Occupancy Time")
+    print("     total: " + str((occupancy_ratios[0] + occupancy_ratios[1] + occupancy_ratios[2])/(len(hospital[0])+len(hospital[1])+len(hospital[2]))))
+    print(("     Main Floor: " + str((occupancy_ratios[0])/(len(hospital[0])))))
+    print(("     Step Down: " + str((occupancy_ratios[1]) / (len(hospital[1])))))
+    print(("     Intensive Care Unit: " + str((occupancy_ratios[2]) / (len(hospital[2])))))
 
     #Queue Size
+    print("Average Queue Size: " + str(metadata[17]/current_time))
 
 
 def sim(hospital, queue)
