@@ -4,7 +4,7 @@ class Patient:
 	def __init__(self, id, name, priority, total_time, bed_number, wait_time, age, gender, pregnancy_state, heart_rate_bpm, breaths_per_minute, body_temp, blood_pressure, ox_sat):
 		self.id = id
 		self.name = name
-		self. priority = priority
+		self.priority = priority
 		self.total_time = total_time
 		self.bed_number = bed_number
 		self.wait_time = wait_time
