@@ -67,7 +67,7 @@ def final_statistics(metadata, hospital, current_time):
     occupancy_ratios = [0.0,0.0,0.0]
     for i in range(len(hospital)):
         for j in range(len(hospital[i])):
-            occupancy_ratios[i]+= hospital[i][j].occupancy_ratio
+            occupancy_ratios[i] += hospital[i][j].occupancy_ratio
 
     print("Average Occupancy Time")
     print("     total: " + str((occupancy_ratios[0] + occupancy_ratios[1] + occupancy_ratios[2])/(len(hospital[0])+len(hospital[1])+len(hospital[2]))))
@@ -79,7 +79,7 @@ def final_statistics(metadata, hospital, current_time):
     print("Average Queue Size: " + str(metadata[17]/current_time))
 
 
-def sim(hospital, queue)
+def sim(hospital, queue):
     # Current simulation time in seconds
     curr_time = 0
     while not queue.is_empty():
@@ -168,6 +168,6 @@ def make_hospital(floors, beds):
 if __name__ == "__main__":
     beds = [100, 100, 100]
     hospital = make_hospital(len(beds), beds)
-    patient_queue = build_queue(filename)
+    patient_queue = build_queue("data.txt")
     sim(hospital, patient_queue)
 
