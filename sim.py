@@ -82,7 +82,7 @@ def final_statistics(metadata, hospital, current_time):
 
 
 
-def sim(hospital, queue)
+def sim(hospital, queue):
     # Full simulation, patient to bed allocation based on patient priority
     # given by the machine learning model
 

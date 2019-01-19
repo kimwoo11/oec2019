@@ -15,11 +15,17 @@ def new_patient(patient_queue):
 	age = input("Age: ")
 	if(age == "QUIT"):
 		return
-	gender = input("Gender [M\F]: ")
+	gender = input("Gender [m/f]: ")
 	if(gender == "QUIT"):
 		return
-	pregnancy_state = input("Is the patient pregnant? [y/n]: ")
+	if(gender != 'm' and gender != 'f'):
+		print("Invalid input. Patient not registered.")
+		return
+	pregnancy_state = str(input("Is the patient pregnant? [y/n]: "))
 	if(pregnancy_state == "QUIT"):
+		return
+	if(pregnancy_state != 'y' and pregnancy_state != 'n'):
+		print("Invalid input. Patient not registered.")
 		return
 	heart_rate_bpm = input("Heart rate (beats per minute): ")
 	if(heart_rate_bpm == "QUIT"):
