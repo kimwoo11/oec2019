@@ -12,7 +12,7 @@ def sim(hospital, queue)
         if patient != -1:
             floor -= 1
             z_array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]      # Will be used for calculating performance metrics
-            hospital[floor][bed].assign_patient(patient.id, , z_array):
+            hospital[floor][bed].assign_patient(patient.id, patient.total_time, z_array):
 
 
 

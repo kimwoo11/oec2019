@@ -41,7 +41,7 @@ class Bed:
 			self.patient_time -= 1
 
 		if not self.occupancy:
-			self.turnover_time+=1
+			self.turnover_time += 1
 			if self.maintenance_time != 0:
 				self.maintenance_time -= 1
 
