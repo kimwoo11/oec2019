@@ -26,5 +26,5 @@ class MultiLayerPerceptron(nn.Module):
         x = self.act2(x)
         x = self.fc4(x)
         x = self.act4(x)
-        return F.log_softmax(x, dim=1)  # Normalize to prob distribution
+        return F.softmax(x)  # Normalize to prob distribution
 

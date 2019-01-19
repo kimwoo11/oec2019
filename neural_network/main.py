@@ -11,7 +11,7 @@ def train():
     # Setting hyper-parameters
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=5)
-    parser.add_argument('--lr', type=float, default=5)
+    parser.add_argument('--lr', type=float, default=10)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--eval_every', type=int, default=1)
     parser.add_argument('--hidden_size', type=int, default=11)
