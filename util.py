@@ -20,33 +20,44 @@ class Patient:
 
 class Bed:
 	occupancy = False
-	patient_id = 0
-	patient_time = -1
+	patient = None
 	turnover_time = 0
 	maintenance_time = 0
 
-	def __init__(self, doctor_id, floor):
+	def __init__(self, doctor_id, floor, bed_id):
 		self.doctor_id = doctor_id
 		self.floor = floor
+		self.bed_id = bed_id
 
-	def assign_patient(self, patient_id, patient_time):
+	def assign_patient(self, patient, metadata):
+		print(patient.name + " (patient " + str(patient.id) + ") has been assigned to bed " + str(self.bed_id))
+
+		metadata[patient.priority - 1] += patient.wait_time
+		metadata[4 + patient.priority] += 1
+		metadata[10] = max(metadata[10], patient.wait_time)
+
+		metadata[11 + self.floor] += self.turnover_time
+		metadata[14+self.floor] += 1
 		self.occupancy = True
-		self.patient_id = patient_id
-		self.patient_time = patient_time
+		self.patient = patient
 		self.turnover_time = -1
 		self.maintenance_time = 20
 
+
+
 	def update_bed(self):
 		if self.occupancy:
-			self.patient_time -= 1
+			self.patient.total_time -= 1
 
 		if not self.occupancy:
-			self.turnover_time+=1
+			self.turnover_time += 1
 			if self.maintenance_time != 0:
 				self.maintenance_time -= 1
 
-		if self.patient_time == 0:
+		if self.patient.total_time == 0:
 			self.occupancy = False
+			print(self.patient.name + " has been released from the hospital, bed " + str(self.bed_id) + " is now free")
+			self.patient = None
 
 
 class PatientQueue(object):
@@ -57,7 +68,7 @@ class PatientQueue(object):
 		return ' '.join([str(i) for i in self.queue])
 
 	# for checking if the queue is empty
-	def isEmpty(self):
+	def is_empty(self):
 		return len(self.queue) == []
 
 	# for inserting an element in the queue
