@@ -1,3 +1,5 @@
+from typing import List, Any
+
 from util import *
 
 def build_queue(filename):
@@ -79,9 +81,16 @@ def final_statistics(metadata, hospital, current_time):
     print("Average Queue Size: " + str(metadata[17]/current_time))
 
 
-def sim(hospital, queue):
-    # Current simulation time in seconds
-    curr_time = 0
+
+def sim(hospital, queue)
+    # Full simulation, patient to bed allocation based on patient priority
+    # given by the machine learning model
+
+    curr_time = 0           # Minute-by-minute timestamp of the simulation
+    metadata = []           # Metadata will store the simulations performance metrics
+    for i in range(17):
+        metadata.append(0)
+
     while not queue.is_empty():
 
         patient, floor, bed = check_4_openings(queue, hospital)
@@ -90,9 +99,18 @@ def sim(hospital, queue):
         # Case 2: patient can be allocated to a specific bed and floor
         if patient != -1:
             floor -= 1
-            z_array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]      # Will be used for calculating performance metrics
-            hospital[floor][bed].assign_patient(patient.id, patient.total_time, z_array)
+            # Will be used for calculating performance metrics
+            hospital[floor][bed].assign_patient(patient, metadata)
 
+
+        for i in range(len(queue)):
+            queue[i].wait_time += 1
+            queue[i].priority = wait_to_priority(queue.wait_time, queue[i].priority)
+
+        # Update timestamps for every bed in the hospital
+        for i in range(len(hospital)):
+            for j in range(len(hospital[i])):
+                hospital[i][j].update_bed()
 
         curr_time += 1
 
@@ -104,8 +122,10 @@ def check_4_openings(queue, hospital):
     popped_patients = []
     while not queue.is_empty():
 
+        # Obtain the next patients floor and potential bed
         next_floor = find_patient_floor(queue, hospital)
         next_bed = check_4_beds(next_floor, hospital)
+
         if next_bed == -1:                              # Bed for this patient not available
             popped_patients.append(queue.pop())
         else:                                           # Bed for this patient available
@@ -150,6 +170,7 @@ def find_patient_floor(queue, hospital):
         queue.insert(patient_queue)
         return 1                                            # Assign patient to floor 1, Low Priority
 
+
 def make_hospital(floors, beds):
     # Represent hospital as a nested array
     # Outer Array: represent hospital floors
@@ -163,6 +184,20 @@ def make_hospital(floors, beds):
             hospital[i].append(bed_object)
 
     return hospital
+
+
+def wait_to_priority(wait, priority):
+    if priority == 1:
+        return priority
+    elif priority == 2 and wait >= 60:
+        return 1
+    elif priority == 3 and wait >= 120:
+        return 2
+    elif priority == 4 and wait >= 240:
+        return 3
+    elif priority == 5 and wait >= 480:
+        return 4
+
 
 
 if __name__ == "__main__":
