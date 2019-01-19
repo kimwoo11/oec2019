@@ -15,7 +15,7 @@ def build_queue(filename):
 
     for line in lines:
         line = line.split(",")
-        patient_queue.insert(Patient(line[0], line[1], line[2], line[3], -1, 0, line[6], line[7], line[8], line[9], line[10], line[11], line[12], line[13]))
+        patient_queue.insert(Patient(line[0], line[1], int(line[2]), int(line[3]), -1, 0, line[6], line[7], line[8], line[9], line[10], line[11], line[12], line[13]))
 
     return patient_queue
 
@@ -72,39 +72,36 @@ def final_statistics(metadata, hospital, current_time):
             occupancy_ratios[i]+= hospital[i][j].occupancy_ratio
 
     print("Average Occupancy Time")
-    print("     total: " + str((occupancy_ratios[0] + occupancy_ratios[1] + occupancy_ratios[2])/(len(hospital[0])+len(hospital[1])+len(hospital[2]))))
-    print(("     Main Floor: " + str((occupancy_ratios[0])/(len(hospital[0])))))
-    print(("     Step Down: " + str((occupancy_ratios[1]) / (len(hospital[1])))))
-    print(("     Intensive Care Unit: " + str((occupancy_ratios[2]) / (len(hospital[2])))))
+    print("     total: " + str(round((occupancy_ratios[0] + occupancy_ratios[1] + occupancy_ratios[2])/(len(hospital[0])+len(hospital[1])+len(hospital[2])), 3))+ " min.")
+    print("     Main Floor: " + str(round((occupancy_ratios[0])/(len(hospital[0])), 3))+ " min.")
+    print("     Step Down: " + str(round((occupancy_ratios[1]) / (len(hospital[1])), 3))+ " min.")
+    print("     Intensive Care Unit: " + str(round((occupancy_ratios[2]) / (len(hospital[2])), 3))+ " min.")
 
     #Queue Size
-    print("Average Queue Size: " + str(metadata[17]/current_time))
+    print("Average Queue Size: " + str(metadata[17]/current_time)+ " patients")
 
 
-def sim(hospital, queue)
+def sim(hospital, queue, metadata, curr_time):
     # Full simulation, patient to bed allocation based on patient priority
     # given by the machine learning model
 
-    curr_time = 0           # Minute-by-minute timestamp of the simulation
-    metadata = []           # Metadata will store the simulations performance metrics
-    for i in range(17):
-        metadata.append(0)
 
-    while not queue.is_empty():
-
-        patient, floor, bed = check_4_openings(queue, hospital)
+    while curr_time < 250:
+        patient, floor, bed, queue = check_4_openings(queue, hospital)
 
         # Case 1: no patient can be allocated (all beds full)
         # Case 2: patient can be allocated to a specific bed and floor
+
+
         if patient != -1:
             floor -= 1
             # Will be used for calculating performance metrics
             hospital[floor][bed].assign_patient(patient, metadata)
 
+        # for i in range(len(queue.queue)):
+        #     queue.queue[i].wait_time += 1
+        #     queue.queue[i].priority = wait_to_priority(queue.queue[i].wait_time, queue.queue[i].priority)
 
-        for i in range(len(queue)):
-            queue[i].wait_time += 1
-            queue[i].priority = wait_to_priority(queue.wait_time, queue[i].priority)
 
         # Update timestamps for every bed in the hospital
         for i in range(len(hospital)):
@@ -112,6 +109,8 @@ def sim(hospital, queue)
                 hospital[i][j].update_bed()
 
         curr_time += 1
+        metadata[17]+= len(queue.queue)
+    return curr_time
 
 
 def check_4_openings(queue, hospital):
@@ -132,14 +131,14 @@ def check_4_openings(queue, hospital):
             next_patient = queue.pop()                  # This patient can be allocated
             for i in range(len(popped_patients)):
                 queue.insert(popped_patients[i])
-            return next_patient, next_floor, next_bed
+            return next_patient, next_floor, next_bed, queue
 
-    # Was not able to assign any patient
-    # Insert all patients back into priority queue
-    for i in range(len(popped_patients)):
-        queue.insert(popped_patients[i])
+        # Was not able to assign any patient
+        # Insert all patients back into priority queue
+        for i in range(len(popped_patients)):
+            queue.insert(popped_patients[i])
 
-    return -1, 0, 0
+    return -1, 0, 0, queue
 
 
 def check_4_beds(floor, hospital):
@@ -147,7 +146,7 @@ def check_4_beds(floor, hospital):
     #           bed at the indicated floor
     floor -= 1
     for i in range(len(hospital[floor])):
-        if hospital[floor][i].occupancy:
+        if not hospital[floor][i].occupancy:
             # Index of the next available bed
             return i
 
@@ -160,13 +159,13 @@ def find_patient_floor(queue, hospital):
 
     patient = queue.pop()
     if patient.priority == 1:
-        queue.insert(patient_queue)
+        queue.insert(patient)
         return 3                                            # Assign patient to floor 3, ICU
     elif patient.priority == 2 or patient.priority == 3:
-        queue.insert(patient_queue)
+        queue.insert(patient)
         return 2                                            # Assign patient to floor 2, Moderate
     else:
-        queue.insert(patient_queue)
+        queue.insert(patient)
         return 1                                            # Assign patient to floor 1, Low Priority
 
 
@@ -202,6 +201,13 @@ def wait_to_priority(wait, priority):
 if __name__ == "__main__":
     beds = [100, 100, 100]
     hospital = make_hospital(len(beds), beds)
-    patient_queue = build_queue(filename)
-    sim(hospital, patient_queue)
+    patient_queue = build_queue('data.txt')
+
+    curr_time = 0  # Minute-by-minute timestamp of the simulation
+    metadata = []  # Metadata will store the simulations performance metrics
+    for i in range(18):
+        metadata.append(0)
+
+    curr_time = sim(hospital, patient_queue, metadata, curr_time)
+    final_statistics(metadata, hospital, curr_time)
 

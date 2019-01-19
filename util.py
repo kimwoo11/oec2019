@@ -43,7 +43,7 @@ class Bed:
 	# The assign patient function is called when a new patient is assigned to a given bed
 
 	def assign_patient(self, patient, metadata):
-		print(patient.name + " (patient " + str(patient.id) + ") has been assigned to bed " + str(self.bed_id))
+		print(patient.name + " (patient " + str(patient.id) + ") has been assigned to bed " + str(self.bed_id) + " on floor " + str(self.floor))
 
 		# Updates metadata on patient wait time and turnover time
 
@@ -78,11 +78,11 @@ class Bed:
 				self.maintenance_time -= 1
 
 		# If the patient has reached his required care time, release him from the hospital and free this bed
-
-		if self.patient.total_time == 0:
-			self.occupancy = False
-			print(self.patient.name + " has been released from the hospital, bed " + str(self.bed_id) + " is now free")
-			self.patient = None
+		if self.occupancy:
+			if self.patient.total_time == 0:
+				self.occupancy = False
+				print(self.patient.name + " has been released from the hospital, bed " + str(self.bed_id) + " is now free")
+				self.patient = None
 
 		# Calculate the occupancy ratio
 
@@ -99,7 +99,10 @@ class PatientQueue(object):
 
 	# for checking if the queue is empty
 	def is_empty(self):
-		return len(self.queue) == []
+		if len(self.queue) == 0:
+			return True
+		else:
+			return False
 
 	# for inserting an element in the queue
 	def insert(self, data):
