@@ -75,12 +75,16 @@ def new_patient(patient_queue):
                     int(body_temperature), int(blood_pressure),
                     int(ox_sat), 0, 0, 0]
     level = use_model(patient_list)
-    patient = Patient(0, name, level, 0, 0, 0, age, gender, pregnancy_state, heart_rate_bpm, breaths_per_minute,
-                      body_temperature, blood_pressure, ox_sat)
-    patient_queue.insert(patient)
+    
 
     print("\nInformation collected. Computing triage score...")
     print("\nCalculated triage score: {}".format(level))
+    level = input("\nWhat triage score would you like to assign to the patient? ")
+    print("New patient successfully added.")
+
+    patient = Patient(0, name, level, 0, 0, 0, age, gender, pregnancy_state, heart_rate_bpm, breaths_per_minute,
+                      body_temperature, blood_pressure, ox_sat)
+    patient_queue.insert(patient)
 
 
 # Main parser function. Runs in a while loop forever, always asking the user
