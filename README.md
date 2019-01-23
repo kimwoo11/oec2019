@@ -5,3 +5,5 @@ All teams were given 6 hours to complete the competition.
 ### Running the code
 Run main.py for the machine learning and console program.  
 Run sim.py for the simulation and bed allocation algorithm, including performance metrics.
+
+Team members: Christopher Agia, Steve Kim, Samuel Looper, Luke Volpatti
